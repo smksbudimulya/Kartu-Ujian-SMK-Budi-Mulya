@@ -1,4 +1,4 @@
-# E-Kartu Ujian — SMKS Budi Mulya
+# E-Kartu Ujian — SMKS Budi Mulya (GitHub Pages V2)
 
 Frontend: GitHub Pages  
 Backend + database: Google Apps Script + Google Spreadsheet
@@ -72,3 +72,17 @@ Salin URL `/exec` ke `config.js`.
 GitHub Pages adalah hosting statis. Data dan proses penyimpanan tetap dilakukan oleh Google Apps Script.
 
 Jangan menyimpan data rahasia atau password backend di repository publik. URL Web App Apps Script memang harus dapat diakses browser agar frontend GitHub Pages dapat berkomunikasi dengan backend.
+
+
+## Perbaikan V2
+
+Memperbaiki CSS pada tampilan utama: selector `.view.active` sebelumnya tertulis dengan escape yang salah sehingga semua halaman aplikasi tetap `display:none`. Header terlihat, tetapi area aplikasi menjadi blank. V2 sudah menggunakan `.view.active { display:block; }`.
+
+
+## Logo SMKS Budi Mulya
+
+Logo header dan favicon menggunakan Cloudinary:
+
+`https://res.cloudinary.com/bwmgqxug/image/upload/v1789022731/logo95_-_Copy.png`
+
+URL ini digunakan sebagai delivery URL gambar Cloudinary sehingga tidak perlu menyimpan file logo di repository.
