@@ -27,7 +27,7 @@
 
 header{background:#17213b;color:white;padding:14px 20px;position:sticky;top:0;z-index:20}.head{max-width:1250px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:15px}
 
-.brand{display:flex;gap:12px;align-items:center}.logoIcon{width:42px;height:42px;border-radius:12px;background:#f43f5e;display:grid;place-items:center}.brand b{font-size:20px}.brand small{display:block;color:#cbd5e1;margin-top:3px}
+.brand{display:flex;gap:12px;align-items:center}.brand-icon{width:44px;height:44px;border-radius:11px;background:#fff;display:grid;place-items:center;overflow:hidden;flex:0 0 44px}.brand-icon img{width:100%;height:100%;object-fit:contain;padding:3px}.logoIcon{width:42px;height:42px;border-radius:12px;background:#f43f5e;display:grid;place-items:center}.brand b{font-size:20px}.brand small{display:block;color:#cbd5e1;margin-top:3px}
 
 .actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.btn{border:1px solid #dbe2ea;background:white;color:#17213b;border-radius:10px;padding:9px 13px;font-weight:700;font-size:12px}.btn.primary{background:#f43f5e;color:#fff;border-color:#f43f5e}.btn.green{background:#10b981;color:#fff;border-color:#10b981}.btn.dark{background:#263451;color:white;border-color:#3b4966}
 
@@ -75,7 +75,7 @@ table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid 
 
 <button class="btn green" id="saveBtn"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
 
-<button class="btn" id="loginBtn"><i class="fa-solid fa-user"></i> <span id="roleLabel">Admin</span></button>
+<button class="btn" id="loginBtn"><i class="fa-solid fa-user"></i> <span id="roleLabel">Login</span></button>
 
 </div>
 
@@ -307,9 +307,9 @@ var app={
 
   ],
 
-  sigMode:"draw",signature:"",logo:"",cardType:"meja",
+  sigMode:"draw",signature:"",logo:"https://res.cloudinary.com/bwmgqxug/image/upload/v1789022731/logo95_-_Copy.png",cardType:"meja",
 
-  user:{username:"admin",role:"Admin",nama:"Administrator Utama"}
+  user:null
 
 };
 
@@ -402,7 +402,7 @@ function setView(id){
 
  if(id=="previewView"){renderAll()}
 
- if(id=="historyView"){loadHistory();if(app.user.role=="Admin")loadUsers()}
+ if(id=="historyView"){loadHistory();if(app.user&&app.user.role=="Admin")loadUsers()}
 
  window.scrollTo(0,0);
 
@@ -556,7 +556,7 @@ function renderCards(){
 
  app.students.forEach(function(s){
 
-  var logo=app.logo?'<img class="schoolLogo" src="'+app.logo+'">':'<div class="schoolLogo"></div>';
+  var logo=app.logo?'<img class="schoolLogo" src="'+app.logo+'" alt="Logo Sekolah">':'<img class="schoolLogo" src="https://res.cloudinary.com/bwmgqxug/image/upload/v1789022731/logo95_-_Copy.png" alt="Logo SMKS Budi Mulya">';
 
   var qr="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data="+encodeURIComponent(s.no_peserta||"");
 
@@ -667,7 +667,7 @@ function sync(){
   if(!gas()){toast("Mode lokal. Atur API_URL di config.js untuk terhubung Spreadsheet.");return}
   loading(true,"Sync Google Sheets...");
   jsonp("getAppData",{},function(data){
-    if(data && data.config)applyCfg(data.config);
+    if(data && data.config){applyCfg(data.config);if(!app.logo)app.logo="https://res.cloudinary.com/bwmgqxug/image/upload/v1789022731/logo95_-_Copy.png";renderAll();}
     if(data && data.students && data.students.length){app.students=data.students;renderSample();renderAll()}
     loading(false);toast("Sync selesai.");
   },function(e){
@@ -677,7 +677,8 @@ function sync(){
 
 function printCards(){
 
- if(app.user.role=="Peserta"){toast("Peserta tidak memiliki akses cetak.",true);return}
+ if(!app.user){toast("Silakan login terlebih dahulu.",true);return}
+ if(app.user.role=="Peserta"){toast("Peserta tidak memiliki akses cetak.",true);return}
 
  renderAll();logPrint("Cetak Kartu");window.print();
 
@@ -685,7 +686,8 @@ function printCards(){
 
 async function downloadPDF(){
 
- if(app.user.role=="Peserta"){toast("Peserta tidak memiliki akses PDF.",true);return}
+ if(!app.user){toast("Silakan login terlebih dahulu.",true);return}
+ if(app.user.role=="Peserta"){toast("Peserta tidak memiliki akses PDF.",true);return}
 
  if(!window.html2canvas||!window.jspdf){toast("Library PDF belum termuat. Refresh dan pastikan internet aktif.",true);return}
 
@@ -718,7 +720,7 @@ async function downloadPDF(){
 function logPrint(kind){
   if(!gas())return;
   postApi("savePrintHistory",{
-    operator:app.user.username,
+    operator:app.user?app.user.username:"Guest",
     jumlahKartu:app.students.length,
     kelasRuang:kind
   },function(){},function(){});
@@ -750,7 +752,7 @@ function loadUsers(){
 }
 
 function deleteUser(username){
-  if(username==app.user.username){toast("Akun aktif tidak dapat dihapus.",true);return}
+  if(app.user&&username==app.user.username){toast("Akun aktif tidak dapat dihapus.",true);return}
   if(!confirm("Hapus "+username+"?"))return;
   postApi("deleteUser",{username:username},function(r){
     if(r && r.success!==false){toast("Pengguna dihapus.");loadUsers();}
