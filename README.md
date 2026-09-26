@@ -85,4 +85,6 @@ Logo header dan favicon menggunakan Cloudinary:
 
 `https://res.cloudinary.com/bwmgqxug/image/upload/v1789022731/logo95_-_Copy.png`
 
+<!-- GitHub Pages refresh -->
+
 URL ini digunakan sebagai delivery URL gambar Cloudinary sehingga tidak perlu menyimpan file logo di repository.
