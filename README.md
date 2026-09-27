@@ -79,11 +79,11 @@ Jangan menyimpan data rahasia atau password backend di repository publik. URL We
 Memperbaiki CSS pada tampilan utama: selector `.view.active` sebelumnya tertulis dengan escape yang salah sehingga semua halaman aplikasi tetap `display:none`. Header terlihat, tetapi area aplikasi menjadi blank. V2 sudah menggunakan `.view.active { display:block; }`.
 
 
-## Logo SMKS Budi Mulya
+## Logo Sekolah
 
 Logo header dan favicon menggunakan Cloudinary:
 
-`https://res.cloudinary.com/bwmgqxug/image/upload/v1789022731/logo95_-_Copy.png`
+`https://res.cloudinary.com/logo95_-_Copy.png`
 
 <!-- GitHub Pages refresh -->
 
