@@ -142,7 +142,7 @@
   font-size:calc(var(--sched-font) * .46) !important;
 }
 </style>
-</head>
+<style>.adminHint{display:flex;gap:10px;align-items:center;background:#eff6ff;border:1px solid #bfdbfe;color:#173b70}.adminHint span{color:#64748b;font-size:12px}.user-actions{display:flex;gap:6px;flex-wrap:wrap}.btn.red{background:#fee2e2;color:#991b1b;border-color:#fecaca}.btn.blue{background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe}</style></head>
 <body>
 
 <header class="top"><div class="topin">
@@ -155,6 +155,7 @@
 <button class="tab active" data-page="dataPage">PENGATURAN &amp; DATA</button>
 <button class="tab" data-page="previewPage">DESAIN &amp; PREVIEW</button>
 <button class="tab" data-page="historyPage">RIWAYAT CETAK</button>
+<button class="tab adminOnlyNav" id="adminTabBtn" data-page="adminPage" style="display:none">ADMIN</button>
 </div></nav>
 
 <main class="wrap">
@@ -244,18 +245,8 @@
           <div><b>Peserta</b><span class="muted">Melihat preview; tidak dapat mencetak.</span></div>
         </div>
       </div>
+<div class="card adminHint" id="adminHint" style="display:none"><b>Panel Admin</b><span>Kelola akun tersedia pada tab ADMIN.</span></div>
 
-      <div class="card" id="usersCard" style="display:none">
-        <div class="cardhead"><div><h2>Manajemen Pengguna</h2><p>Khusus Admin.</p></div><div class="icon"><i class="fa-solid fa-users"></i></div></div>
-        <div class="fields">
-          <div class="field"><label>Username</label><input id="newUser" class="input"></div>
-          <div class="field"><label>Password</label><input id="newPass" class="input" type="password"></div>
-          <div class="field"><label>Nama</label><input id="newName" class="input"></div>
-          <div class="field"><label>Role</label><select id="newRole" class="select"><option>Admin</option><option>Guru</option><option>Peserta</option></select></div>
-        </div>
-        <button class="btn brand" id="addUserBtn" style="margin-top:10px">Tambah Pengguna</button>
-        <div class="tablewrap" style="margin-top:12px"><table class="table"><thead><tr><th>Username</th><th>Nama</th><th>Role</th><th></th></tr></thead><tbody id="users"></tbody></table></div>
-      </div>
 <div class="card" id="dataManagementCard" style="display:none;margin-top:14px">
         <div class="cardhead"><div><h2>Manajemen Data Ujian</h2><p>Khusus Admin. Bersihkan data ujian lama tanpa menghapus akun dan identitas sekolah.</p></div><div class="icon"><i class="fa-solid fa-database"></i></div></div>
         <div class="manageStats" id="manageStats"><span class="pill" id="manageStudentStat">0 peserta</span><span class="pill" id="managePhotoStat">Foto mengikuti data</span></div>
@@ -292,7 +283,17 @@
   </div>
 </section>
 
-<section id="historyPage" class="page hide">
+<section id="adminPage" class="page hide"><div class="card"><div class="cardhead"><div><h2>Panel Admin</h2><p>Kelola akun pengguna, password, nama, dan role. Hanya Admin yang dapat mengakses halaman ini.</p></div><div class="icon"><i class="fa-solid fa-user-shield"></i></div></div></div><div class="card" id="usersCard" style="display:none">
+        <div class="cardhead"><div><h2>Manajemen Pengguna</h2><p>Khusus Admin.</p></div><div class="icon"><i class="fa-solid fa-users"></i></div></div>
+        <div class="fields">
+          <div class="field"><label>Username</label><input id="newUser" class="input"></div>
+          <div class="field"><label>Password</label><input id="newPass" class="input" type="password"></div>
+          <div class="field"><label>Nama</label><input id="newName" class="input"></div>
+          <div class="field"><label>Role</label><select id="newRole" class="select"><option>Admin</option><option>Guru</option><option>Peserta</option></select></div>
+        </div>
+        <button class="btn brand" id="addUserBtn" style="margin-top:10px">Tambah Pengguna</button>
+        <div class="tablewrap" style="margin-top:12px"><table class="table"><thead><tr><th>Username</th><th>Nama</th><th>Role</th><th></th></tr></thead><tbody id="users"></tbody></table></div>
+      </div></section><section id="historyPage" class="page hide">
   <div class="hero"><div><h1>Riwayat Cetak</h1><p>Catatan aktivitas cetak dan unduh PDF.</p></div><button class="btn" id="refreshHistory"><i class="fa-solid fa-rotate"></i> Muat Ulang</button></div>
   <div class="card"><div class="tablewrap"><table class="table"><thead><tr><th>Tanggal</th><th>Operator</th><th>Jumlah</th><th>Keterangan</th></tr></thead><tbody id="historyRows"><tr><td colspan="4" class="empty">Belum ada riwayat.</td></tr></tbody></table></div></div>
 </section>
@@ -317,7 +318,7 @@
   </div>
 </div>
 
-<div id="loading" class="loading"><div class="loadbox" id="loadText">Memproses...</div></div>
+<div id="userEditModal" class="modal"><div class="modalbox" style="width:min(520px,94%)"><div class="cardhead"><div><h2>Edit Pengguna</h2><p>Username tidak diubah.</p></div><button class="btn" id="closeUserEdit">×</button></div><input id="editOldUser" type="hidden"><div class="fields"><div class="field"><label>Username</label><input id="editUser" class="input" readonly></div><div class="field"><label>Nama</label><input id="editName" class="input"></div><div class="field"><label>Password Baru <small>(kosong = tetap)</small></label><input id="editPass" class="input" type="password"></div><div class="field"><label>Role</label><select id="editRole" class="select"><option>Admin</option><option>Guru</option><option>Peserta</option></select></div></div><button class="btn brand" id="saveUserEdit" style="width:100%;margin-top:12px">Simpan Perubahan</button></div></div><div id="loading" class="loading"><div class="loadbox" id="loadText">Memproses...</div></div>
 <script>
 (function(){
 "use strict";
@@ -589,9 +590,10 @@ async function uploadBulkPhotos(){
 
 function setupSignature(){var c=el("sigCanvas"),ctx=c.getContext("2d"),down=false;ctx.lineWidth=4;ctx.lineCap="round";ctx.strokeStyle="#183b70";function pt(e){var r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height}}c.onpointerdown=function(e){if(app.sigMode!=="draw")return;down=true;c.setPointerCapture(e.pointerId);var p=pt(e);ctx.beginPath();ctx.moveTo(p.x,p.y)};c.onpointermove=function(e){if(!down)return;var p=pt(e);ctx.lineTo(p.x,p.y);ctx.stroke();app.signature=c.toDataURL("image/png")};c.onpointerup=function(){down=false};c.onpointercancel=function(){down=false}}
 function setSig(mode){app.sigMode=mode;document.querySelectorAll("[data-sig]").forEach(function(b){b.classList.toggle("active",b.dataset.sig===mode)});el("drawArea").style.display=mode==="draw"?"block":"none";el("uploadArea").style.display=mode==="upload"?"block":"none";if(mode==="none")app.signature="";renderCards()}
-function login(){var u=el("loginUser").value.trim(),p=el("loginPass").value;if(!u||!p){toast("Username dan password wajib diisi",true);return}if(!apiReady()){toast("API Apps Script belum diatur di config.js",true);return}loading(true,"Memeriksa akun...");jsonp("checkLogin",{username:u,password:p},function(r){loading(false);if(r&&r.success){app.user=r.user;app.auth={username:u,password:p};el("roleLabel").textContent=r.user.role;el("loginModal").classList.remove("show");el("usersCard").style.display=r.user.role==="Admin"?"block":"none";el("dataManagementCard").style.display=r.user.role==="Admin"?"block":"none";toast("Login sebagai "+r.user.role);if(r.user.role==="Admin"){loadUsers();updateManageStats()}}else toast((r&&r.message)||"Login gagal",true)},function(e){loading(false);toast(e.message,true)})}
+function isAdminRole(role){var r=String(role||"").trim().toLowerCase();return r==="admin"||r==="administrator"||r==="administrator utama"}
+function login(){var u=el("loginUser").value.trim(),p=el("loginPass").value;if(!u||!p){toast("Username dan password wajib diisi",true);return}if(!apiReady()){toast("API Apps Script belum diatur di config.js",true);return}loading(true,"Memeriksa akun...");jsonp("checkLogin",{username:u,password:p},function(r){loading(false);if(r&&r.success){app.user=r.user;app.auth={username:u,password:p};var isAdmin=isAdminRole(r.user.role);el("roleLabel").textContent=isAdmin?"Admin":r.user.role;el("adminTabBtn").style.display=isAdmin?"inline-flex":"none";el("adminHint").style.display=isAdmin?"flex":"none";el("dataManagementCard").style.display=isAdmin?"block":"none";el("loginModal").classList.remove("show");toast("Login sebagai "+(isAdmin?"Admin":r.user.role));if(isAdmin){loadUsers();updateManageStats();setPage("adminPage")}}else toast((r&&r.message)||"Login gagal",true)},function(e){loading(false);toast(e.message,true)})}
 function loadHistory(){if(!apiReady()){el("historyRows").innerHTML='<tr><td colspan="4" class="empty">Mode lokal. Belum ada riwayat dari Spreadsheet.</td></tr>';return}jsonp("getPrintHistory",{limit:100},function(rows){el("historyRows").innerHTML=(rows||[]).map(function(x){return"<tr><td>"+esc(x.tgl)+"</td><td>"+esc(x.operator)+"</td><td>"+x.jumlah+"</td><td>"+esc(x.ruang)+"</td></tr>"}).join("")||'<tr><td colspan="4" class="empty">Belum ada riwayat.</td></tr>'},function(e){toast(e.message,true)})}
-function loadUsers(){if(!apiReady())return;jsonp("getUsers",{},function(rows){el("users").innerHTML=(rows||[]).map(function(u){return"<tr><td>"+esc(u.username)+"</td><td>"+esc(u.nama)+"</td><td>"+esc(u.role)+"</td><td><button class='btn red' data-del='"+esc(u.username)+"'>Hapus</button></td></tr>"}).join("");el("users").querySelectorAll("[data-del]").forEach(function(b){b.onclick=function(){if(!confirm("Hapus "+b.dataset.del+"?"))return;postApi("deleteUser",{username:b.dataset.del},function(){loadUsers();toast("Pengguna dihapus")},function(e){toast(e.message,true)})}})},function(e){toast(e.message,true)})}
+function loadUsers(){if(!apiReady())return;jsonp("getUsers",{},function(rows){el("users").innerHTML=(rows||[]).map(function(u){return"<tr><td>"+esc(u.username)+"</td><td>"+esc(u.nama)+"</td><td>"+esc(u.role)+"</td><td><div class='user-actions'><button class='btn blue' data-edit='"+esc(u.username)+"'>Edit</button><button class='btn red' data-del='"+esc(u.username)+"'>Hapus</button></div></td></tr>"}).join("")||'<tr><td colspan="4" class="empty">Belum ada pengguna.</td></tr>';el("users").querySelectorAll("[data-edit]").forEach(function(b){b.onclick=function(){var u=(rows||[]).find(function(x){return x.username===b.dataset.edit})||{};el("editOldUser").value=b.dataset.edit;el("editUser").value=b.dataset.edit;el("editName").value=u.nama||"";el("editPass").value="";el("editRole").value=isAdminRole(u.role)?"Admin":(u.role||"Peserta");el("userEditModal").classList.add("show")}});el("users").querySelectorAll("[data-del]").forEach(function(b){b.onclick=function(){if(b.dataset.del===app.user.username){toast("Akun aktif tidak dapat dihapus.",true);return}if(!confirm("Hapus "+b.dataset.del+"?"))return;postApi("deleteUser",{username:b.dataset.del},function(r){if(r&&r.success){loadUsers();toast("Pengguna dihapus")}else toast((r&&r.message)||"Gagal menghapus pengguna",true)},function(e){toast(e.message,true)})}})},function(e){toast(e.message,true)})}
 function logPrint(kind){if(!apiReady()||!app.user)return;postApi("savePrintHistory",{operator:app.user.username,jumlahKartu:app.students.length,kelasRuang:kind},function(){},function(){})}
 function printCards(){if(!app.user){toast("Login terlebih dahulu untuk mencetak",true);el("loginModal").classList.add("show");return}if(app.user.role==="Peserta"){toast("Role Peserta tidak memiliki akses cetak",true);return}renderCards();renderSchedulePreview();var old=el("schedulePaper").innerHTML,shown=el("schedulePaper").style.display;if(el("includeSchedule").checked&&app.schedule.some(function(x){return x.subject||x.date||x.time})){el("schedulePaper").innerHTML=buildScheduleA4();el("schedulePaper").style.display="flex"}logPrint("Cetak");window.print();setTimeout(function(){el("schedulePaper").innerHTML=old;el("schedulePaper").style.display=shown},800)}
 async function pdf(){if(!app.user){toast("Login terlebih dahulu untuk PDF",true);el("loginModal").classList.add("show");return}if(app.user.role==="Peserta"){toast("Role Peserta tidak memiliki akses PDF",true);return}if(!window.html2canvas||!window.jspdf){toast("Library PDF belum siap",true);return}renderCards();renderSchedulePreview();loading(true,"Membuat PDF...");try{var PDF=window.jspdf.jsPDF,pdf=new PDF({orientation:"portrait",unit:"mm",format:"a4"}),pages=el("paper").querySelectorAll(".paper");for(var pi=0;pi<pages.length;pi++){if(pi>0)pdf.addPage();var front=await html2canvas(pages[pi],{scale:2,useCORS:true,backgroundColor:"#fff"});pdf.addImage(front.toDataURL("image/jpeg",.94),"JPEG",0,0,210,297)}if(el("includeSchedule").checked&&app.schedule.some(function(x){return x.subject||x.date||x.time})&&app.students.length){var temp=document.createElement("div");temp.style.cssText="position:fixed;left:-10000px;top:0;width:210mm;background:#fff;";temp.innerHTML=buildScheduleA4();document.body.appendChild(temp);var backs=temp.querySelectorAll(".schedule-preview-sheet");for(var bi=0;bi<backs.length;bi++){pdf.addPage();var back=await html2canvas(backs[bi],{scale:2,useCORS:true,backgroundColor:"#fff"});pdf.addImage(back.toDataURL("image/jpeg",.94),"JPEG",0,0,210,297)}temp.remove()}pdf.save("E-Kartu-Ujian-SMK-Budi-Mulya-"+el("tahun").value+".pdf");logPrint("Unduh PDF");toast("PDF berhasil diunduh")}catch(e){toast("PDF gagal: "+e.message,true)}finally{loading(false)}}
@@ -605,7 +607,7 @@ if(!localStorage.getItem("ekartu_welcome_seen"))el("welcomeModal").classList.add
 el("continueBtn").onclick=function(){if(el("dontShowWelcome").checked)localStorage.setItem("ekartu_welcome_seen","1");el("welcomeModal").classList.remove("show")};
 el("closeWelcome").onclick=function(){el("welcomeModal").classList.remove("show")};
 el("helpBtn").onclick=function(){el("welcomeModal").classList.add("show")};
- document.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){setPage(b.dataset.page)}});
+ document.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){if(b.dataset.page==="adminPage"&&(!app.user||!isAdminRole(app.user.role))){toast("Login sebagai Admin terlebih dahulu",true);el("loginModal").classList.add("show");return}setPage(b.dataset.page)}});
  el("syncBtn").onclick=sync;el("saveBtn").onclick=saveAll;el("loginBtn").onclick=function(){el("loginModal").classList.add("show")};el("closeLogin").onclick=el("cancelLogin").onclick=function(){el("loginModal").classList.remove("show")};el("doLogin").onclick=login;
  el("pdfBtn").onclick=pdf;el("printBtn").onclick=printCards;el("refreshHistory").onclick=loadHistory;syncDesignControls();["designCapacity","photoSize","borderStyle","cardGap"].forEach(function(id){if(el(id))el(id).onchange=function(){app.design.capacity=+el("designCapacity").value||8;app.design.photoSize=el("photoSize").value;app.design.borderStyle=el("borderStyle").value;app.design.cardGap=Number(el("cardGap").value)||0;localStorage.setItem("ekartu_design",JSON.stringify(app.design));renderCards();renderSchedulePreview()}});if(el("scheduleFontSize"))el("scheduleFontSize").oninput=function(){app.design.scheduleFontSize=Number(this.value)||11;el("scheduleFontValue").textContent=app.design.scheduleFontSize+" px";localStorage.setItem("ekartu_design",JSON.stringify(app.design));renderSchedulePreview()};el("resetDesign").onclick=function(){app.design={capacity:8,photoSize:"none",borderStyle:"double",cardGap:0,scheduleFontSize:11};localStorage.setItem("ekartu_design",JSON.stringify(app.design));syncDesignControls();renderCards();renderSchedulePreview();toast("Desain dikembalikan ke pengaturan awal")};
  el("drop").onclick=function(){el("excelFile").click()};el("excelFile").onchange=function(){readExcel(this.files[0]);this.value=""};el("drop").ondragover=function(e){e.preventDefault()};el("drop").ondrop=function(e){e.preventDefault();readExcel(e.dataTransfer.files[0])};
@@ -616,8 +618,10 @@ el("helpBtn").onclick=function(){el("welcomeModal").classList.add("show")};
  el("addSchedule").onclick=function(){app.schedule.push({subject:"",date:"",time:""});renderSchedule();renderSchedulePreview()};el("includeSchedule").onchange=renderSchedulePreview;
  ["judul","sekolah","tahun","kota","tgl","kepsek","nip"].forEach(function(id){el(id).oninput=renderAll;el(id).onchange=renderAll});
  document.querySelectorAll("[data-type]").forEach(function(b){b.onclick=function(){app.cardType=b.dataset.type;document.querySelectorAll("[data-type]").forEach(function(x){x.classList.toggle("active",x===b)});renderCards()}});
- el("addUserBtn").onclick=function(){var data={username:el("newUser").value.trim(),password:el("newPass").value,nama:el("newName").value.trim(),role:el("newRole").value};if(!data.username||!data.password||!data.nama){toast("Lengkapi data pengguna",true);return}postApi("addUser",data,function(r){if(r&&r.success){toast("Pengguna ditambahkan");loadUsers()}else toast((r&&r.message)||"Gagal",true)},function(e){toast(e.message,true)})};
- function adminPost(action,extra,done){if(!app.user||app.user.role!=='Admin'){toast('Login sebagai Admin terlebih dahulu',true);el('loginModal').classList.add('show');return}var p={username:app.auth.username,password:app.auth.password};Object.keys(extra||{}).forEach(function(k){p[k]=extra[k]});postApi(action,p,done,function(e){toast(e.message||'Gagal menjalankan perintah',true)})}
+ el("closeUserEdit").onclick=function(){el("userEditModal").classList.remove("show")};
+el("saveUserEdit").onclick=function(){var data={username:el("editOldUser").value.trim(),password:el("editPass").value,nama:el("editName").value.trim(),role:el("editRole").value};if(!data.nama){toast("Nama wajib diisi",true);return}postApi("updateUser",data,function(r){if(r&&r.success){el("userEditModal").classList.remove("show");loadUsers();toast("Pengguna diperbarui")}else toast((r&&r.message)||"Gagal memperbarui pengguna",true)},function(e){toast(e.message,true)})};
+el("addUserBtn").onclick=function(){var data={username:el("newUser").value.trim(),password:el("newPass").value,nama:el("newName").value.trim(),role:el("newRole").value};if(!data.username||!data.password||!data.nama){toast("Lengkapi data pengguna",true);return}postApi("addUser",data,function(r){if(r&&r.success){toast("Pengguna ditambahkan");loadUsers()}else toast((r&&r.message)||"Gagal",true)},function(e){toast(e.message,true)})};
+ function adminPost(action,extra,done){if(!app.user||!isAdminRole(app.user.role)){toast('Login sebagai Admin terlebih dahulu',true);el('loginModal').classList.add('show');return}var p={username:app.auth.username,password:app.auth.password};Object.keys(extra||{}).forEach(function(k){p[k]=extra[k]});postApi(action,p,done,function(e){toast(e.message||'Gagal menjalankan perintah',true)})}
 function updateManageStats(){if(!el('manageStudentStat'))return;el('manageStudentStat').textContent=app.students.length+' peserta';var count=app.students.filter(function(s){return String(s.foto_url||'').trim()}).length;el('managePhotoStat').textContent=count+' foto terhubung'}
 function setupDataManagement(){
  if(el('backupExamBtn'))el('backupExamBtn').onclick=function(){if(!confirm('Buat backup data ujian sekarang? Foto lama juga akan disalin ke folder Backup.'))return;loading(true,'Membuat backup...');adminPost('backupExamData',{},function(r){loading(false);toast((r&&r.message)||'Backup berhasil');updateManageStats()})};
