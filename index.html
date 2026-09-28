@@ -142,13 +142,13 @@
   font-size:calc(var(--sched-font) * .46) !important;
 }
 </style>
-<style>.adminHint{display:flex;gap:10px;align-items:center;background:#eff6ff;border:1px solid #bfdbfe;color:#173b70}.adminHint span{color:#64748b;font-size:12px}.user-actions{display:flex;gap:6px;flex-wrap:wrap}.btn.red{background:#fee2e2;color:#991b1b;border-color:#fecaca}.btn.blue{background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe}</style></head>
+<style>.adminHint{display:flex;gap:10px;align-items:center;background:#eff6ff;border:1px solid #bfdbfe;color:#173b70}.adminHint span{color:#64748b;font-size:12px}.user-actions{display:flex;gap:6px;flex-wrap:wrap}.btn.red{background:#fee2e2;color:#991b1b;border-color:#fecaca}.btn.blue{background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe}</style><style>#adminTabBtn{display:none!important}#adminPage[data-admin-only="1"]{}</style><style>#adminTabBtn.admin-visible{display:inline-flex!important}</style></head>
 <body>
 
 <header class="top"><div class="topin">
 <div class="brand"><img class="brandlogo" src="https://res.cloudinary.com/bwmgqxug/image/upload/v1789022731/logo95_-_Copy.png" alt="Logo SMK Budi Mulya"><div><div class="brandtitle">E-Kartu Ujian SMK Budi Mulya</div><div class="brandsub">Pembuat Kartu Ujian &amp; Kartu Meja Otomatis</div></div></div>
 <div class="api"><i class="fa-solid fa-link"></i><input id="apiInput" class="input" placeholder="URL Google Apps Script Web App..." aria-label="URL Google Apps Script Web App"></div>
-<div class="actions"><button class="btn dark" id="syncBtn"><i class="fa-solid fa-arrows-rotate"></i> Sync</button><button class="btn brand" id="saveBtn"><i class="fa-solid fa-cloud-arrow-up"></i> Simpan</button><span class="offline" id="offlineBadge">Offline</span><button class="btn" id="helpBtn" title="Panduan"><i class="fa-solid fa-circle-question"></i></button><button class="btn" id="loginBtn"><i class="fa-solid fa-right-to-bracket"></i> <span id="roleLabel">Login</span></button></div>
+<div class="actions"><button class="btn dark" id="syncBtn"><i class="fa-solid fa-arrows-rotate"></i> Sync</button><button class="btn brand" id="saveBtn"><i class="fa-solid fa-cloud-arrow-up"></i> Simpan</button><span class="offline" id="offlineBadge" title="Hijau berarti URL Apps Script sudah diisi. Gunakan Sync untuk menguji koneksi nyata.">Offline</span><button class="btn" id="helpBtn" title="Panduan"><i class="fa-solid fa-circle-question"></i></button><button class="btn" id="loginBtn"><i class="fa-solid fa-right-to-bracket"></i> <span id="roleLabel">Login</span></button></div>
 </div></header>
 
 <nav class="nav"><div class="navin">
@@ -283,7 +283,7 @@
   </div>
 </section>
 
-<section id="adminPage" class="page hide"><div class="card"><div class="cardhead"><div><h2>Panel Admin</h2><p>Kelola akun pengguna, password, nama, dan role. Hanya Admin yang dapat mengakses halaman ini.</p></div><div class="icon"><i class="fa-solid fa-user-shield"></i></div></div></div><div class="card" id="usersCard">
+<section id="adminPage" class="page hide" data-admin-only="1"><div class="card"><div class="cardhead"><div><h2>Panel Admin</h2><p>Kelola akun pengguna, password, nama, dan role. Hanya Admin yang dapat mengakses halaman ini.</p></div><div class="icon"><i class="fa-solid fa-user-shield"></i></div></div></div><div class="card" id="usersCard">
         <div class="cardhead"><div><h2>Manajemen Pengguna</h2><p>Khusus Admin.</p></div><div class="icon"><i class="fa-solid fa-users"></i></div></div>
         <div class="fields">
           <div class="field"><label>Username</label><input id="newUser" class="input"></div>
@@ -344,7 +344,7 @@ function jsonp(action,params,done,fail){
   function cleanup(){clearTimeout(timer);delete window[cb];script.remove()}
   var q="action="+encodeURIComponent(action)+"&callback="+encodeURIComponent(cb);
   Object.keys(params||{}).forEach(function(k){q+="&"+encodeURIComponent(k)+"="+encodeURIComponent(params[k])});
-  var timer=setTimeout(function(){cleanup();fail&&fail(new Error("API timeout"))},15000);
+  var timer=setTimeout(function(){cleanup();fail&&fail(new Error("Apps Script tidak merespons dalam 15 detik. Coba Sync lagi atau periksa deployment Web App."))},15000);
   script.onerror=function(){cleanup();fail&&fail(new Error("Gagal terhubung ke Apps Script"))};
   script.src=window.EKARTU_API_URL+"?"+q;document.body.appendChild(script)
 }
@@ -468,7 +468,7 @@ function renderCards(){
 function renderAll(){renderStudents();renderPhotoManager();renderCards();renderSchedulePreview();updateManageStats();el("dataStatus").textContent=apiReady()?"Terhubung ke Apps Script":"Mode lokal"}
 function saveLocal(){localStorage.setItem("ekartu_rebuild_cfg",JSON.stringify(cfg()));localStorage.setItem("ekartu_rebuild_students",JSON.stringify(app.students));localStorage.setItem("ekartu_rebuild_logo",app.logo);localStorage.setItem("ekartu_design",JSON.stringify(app.design))}
 function saveAll(){saveLocal();if(!apiReady()){toast("Tersimpan di browser. Isi URL Apps Script jika ingin sinkron.");return}loading(true,"Menyimpan...");postApi("saveAppConfig",cfg(),function(){loading(false);toast("Konfigurasi tersimpan ke Spreadsheet")},function(e){loading(false);toast(e.message,true)})}
-function sync(){if(!apiReady()){toast("Mode lokal aktif. Atur EKARTU_API_URL di config.js.",true);return}loading(true,"Mengambil data Spreadsheet...");jsonp("getAppData",{},function(d){if(d&&d.config)applyCfg(d.config);if(d&&Array.isArray(d.students))app.students=d.students;saveLocal();renderAll();loading(false);toast("Sync selesai")},function(e){loading(false);toast(e.message,true)})}
+function sync(){if(!apiReady()){toast("URL Apps Script belum diatur. Masukkan URL Web App terlebih dahulu.",true);return}loading(true,"Mengambil data Spreadsheet...");jsonp("getAppData",{},function(d){if(d&&d.config)applyCfg(d.config);if(d&&Array.isArray(d.students))app.students=d.students;saveLocal();renderAll();loading(false);toast("Sync selesai")},function(e){loading(false);toast(e.message,true)})}
 function replaceStudents(){if(!apiReady()){toast("Data sudah tersimpan lokal. Atur API untuk Spreadsheet.");return}loading(true,"Mengirim data peserta...");postApi("replaceStudents",{students:app.students},function(){loading(false);toast("Data peserta lama diganti dengan data baru")},function(e){loading(false);toast(e.message,true)})}
 function readExcel(file){
  if(!file)return;if(!window.XLSX){toast("Library Excel belum termuat",true);return}
@@ -591,7 +591,7 @@ async function uploadBulkPhotos(){
 function setupSignature(){var c=el("sigCanvas"),ctx=c.getContext("2d"),down=false;ctx.lineWidth=4;ctx.lineCap="round";ctx.strokeStyle="#183b70";function pt(e){var r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height}}c.onpointerdown=function(e){if(app.sigMode!=="draw")return;down=true;c.setPointerCapture(e.pointerId);var p=pt(e);ctx.beginPath();ctx.moveTo(p.x,p.y)};c.onpointermove=function(e){if(!down)return;var p=pt(e);ctx.lineTo(p.x,p.y);ctx.stroke();app.signature=c.toDataURL("image/png")};c.onpointerup=function(){down=false};c.onpointercancel=function(){down=false}}
 function setSig(mode){app.sigMode=mode;document.querySelectorAll("[data-sig]").forEach(function(b){b.classList.toggle("active",b.dataset.sig===mode)});el("drawArea").style.display=mode==="draw"?"block":"none";el("uploadArea").style.display=mode==="upload"?"block":"none";if(mode==="none")app.signature="";renderCards()}
 function isAdminRole(role){var r=String(role||"").trim().toLowerCase();return r==="admin"||r==="administrator"||r==="administrator utama"}
-function login(){var u=el("loginUser").value.trim(),p=el("loginPass").value;if(!u||!p){toast("Username dan password wajib diisi",true);return}if(!apiReady()){toast("API Apps Script belum diatur di config.js",true);return}loading(true,"Memeriksa akun...");jsonp("checkLogin",{username:u,password:p},function(r){loading(false);if(r&&r.success){app.user=r.user;app.auth={username:u,password:p};var isAdmin=isAdminRole(r.user.role);el("roleLabel").textContent=isAdmin?"Admin":r.user.role;el("adminTabBtn").style.display=isAdmin?"inline-flex":"none";el("adminHint").style.display=isAdmin?"flex":"none";el("dataManagementCard").style.display=isAdmin?"block":"none";el("loginModal").classList.remove("show");toast("Login sebagai "+(isAdmin?"Admin":r.user.role));if(isAdmin){el("usersCard").style.display="block";loadUsers();updateManageStats();setPage("adminPage")}else{el("usersCard").style.display="none"}}else toast((r&&r.message)||"Login gagal",true)},function(e){loading(false);toast(e.message,true)})}
+function login(){var u=el("loginUser").value.trim(),p=el("loginPass").value;if(!u||!p){toast("Username dan password wajib diisi",true);return}if(!apiReady()){toast("API Apps Script belum diatur di config.js",true);return}loading(true,"Memeriksa akun...");jsonp("checkLogin",{username:u,password:p},function(r){loading(false);if(r&&r.success){app.user=r.user;app.auth={username:u,password:p};var isAdmin=isAdminRole(r.user.role);el("roleLabel").textContent=isAdmin?"Admin":r.user.role;el("adminTabBtn").classList.toggle("admin-visible",isAdmin);el("adminHint").style.display=isAdmin?"flex":"none";el("dataManagementCard").style.display=isAdmin?"block":"none";el("loginModal").classList.remove("show");toast("Login sebagai "+(isAdmin?"Admin":r.user.role));if(isAdmin){el("usersCard").style.display="block";loadUsers();updateManageStats();setPage("adminPage")}else{el("usersCard").style.display="none";setPage("dataPage")}}else toast((r&&r.message)||"Login gagal",true)},function(e){loading(false);toast(e.message,true)})}
 function loadHistory(){if(!apiReady()){el("historyRows").innerHTML='<tr><td colspan="4" class="empty">Mode lokal. Belum ada riwayat dari Spreadsheet.</td></tr>';return}jsonp("getPrintHistory",{limit:100},function(rows){el("historyRows").innerHTML=(rows||[]).map(function(x){return"<tr><td>"+esc(x.tgl)+"</td><td>"+esc(x.operator)+"</td><td>"+x.jumlah+"</td><td>"+esc(x.ruang)+"</td></tr>"}).join("")||'<tr><td colspan="4" class="empty">Belum ada riwayat.</td></tr>'},function(e){toast(e.message,true)})}
 function loadUsers(){if(!apiReady())return;jsonp("getUsers",{},function(rows){el("users").innerHTML=(rows||[]).map(function(u){return"<tr><td>"+esc(u.username)+"</td><td>"+esc(u.nama)+"</td><td>"+esc(u.role)+"</td><td><div class='user-actions'><button class='btn blue' data-edit='"+esc(u.username)+"'>Edit</button><button class='btn red' data-del='"+esc(u.username)+"'>Hapus</button></div></td></tr>"}).join("")||'<tr><td colspan="4" class="empty">Belum ada pengguna.</td></tr>';el("users").querySelectorAll("[data-edit]").forEach(function(b){b.onclick=function(){var u=(rows||[]).find(function(x){return x.username===b.dataset.edit})||{};el("editOldUser").value=b.dataset.edit;el("editUser").value=b.dataset.edit;el("editName").value=u.nama||"";el("editPass").value="";el("editRole").value=isAdminRole(u.role)?"Admin":(u.role||"Peserta");el("userEditModal").classList.add("show")}});el("users").querySelectorAll("[data-del]").forEach(function(b){b.onclick=function(){if(b.dataset.del===app.user.username){toast("Akun aktif tidak dapat dihapus.",true);return}if(!confirm("Hapus "+b.dataset.del+"?"))return;postApi("deleteUser",{username:b.dataset.del},function(r){if(r&&r.success){loadUsers();toast("Pengguna dihapus")}else toast((r&&r.message)||"Gagal menghapus pengguna",true)},function(e){toast(e.message,true)})}})},function(e){toast(e.message,true)})}
 function logPrint(kind){if(!apiReady()||!app.user)return;postApi("savePrintHistory",{operator:app.user.username,jumlahKartu:app.students.length,kelasRuang:kind},function(){},function(){})}
@@ -631,8 +631,10 @@ function setupDataManagement(){
 setupSignature();
  try{var ds=JSON.parse(localStorage.getItem("ekartu_design")||"null");if(ds)app.design=Object.assign(app.design,ds);var c=JSON.parse(localStorage.getItem("ekartu_rebuild_cfg")||"null"),st=JSON.parse(localStorage.getItem("ekartu_rebuild_students")||"null");if(c)applyCfg(c);if(Array.isArray(st))app.students=st;var lg=localStorage.getItem("ekartu_rebuild_logo");if(lg)app.logo=lg}catch(e){}
  renderSchedule();renderAll();
- // Important: UI is fully rendered before any network request.
- if(apiReady())setTimeout(sync,300);
+ // UI starts in local mode. No automatic API call is made on page load.
+ // This prevents an API timeout warning when Apps Script is cold/unavailable.
+ // Use the Sync button when you want to read the latest Spreadsheet data.
+
 }
 document.addEventListener("DOMContentLoaded",init);
 })();
