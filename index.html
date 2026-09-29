@@ -142,7 +142,14 @@
   font-size:calc(var(--sched-font) * .46) !important;
 }
 </style>
-<style>.adminHint{display:flex;gap:10px;align-items:center;background:#eff6ff;border:1px solid #bfdbfe;color:#173b70}.adminHint span{color:#64748b;font-size:12px}.user-actions{display:flex;gap:6px;flex-wrap:wrap}.btn.red{background:#fee2e2;color:#991b1b;border-color:#fecaca}.btn.blue{background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe}</style><style>#adminTabBtn{display:none!important}#adminPage[data-admin-only="1"]{}</style><style>#adminTabBtn.admin-visible{display:inline-flex!important}</style></head>
+<style>.adminHint{display:flex;gap:10px;align-items:center;background:#eff6ff;border:1px solid #bfdbfe;color:#173b70}.adminHint span{color:#64748b;font-size:12px}.user-actions{display:flex;gap:6px;flex-wrap:wrap}.btn.red{background:#fee2e2;color:#991b1b;border-color:#fecaca}.btn.blue{background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe}</style><style>#adminTabBtn{display:none!important}#adminPage[data-admin-only="1"]{}</style><style>#adminTabBtn.admin-visible{display:inline-flex!important}</style>
+<style>
+.customPaperInputs{display:grid;grid-template-columns:1fr auto 1fr;gap:7px;align-items:center}
+.customPaperInputs span{font-weight:900;color:#64748b}
+.paper{position:relative}
+.schedule-preview-sheet{position:relative}
+</style>
+</head>
 <body>
 
 <header class="top"><div class="topin">
@@ -271,14 +278,25 @@
     <div class="designPanel">
       <div class="designTitle"><div><b><i class="fa-solid fa-sliders"></i> Pengaturan Desain Kartu</b><span>Semua pengaturan ukuran kartu, foto, dan garis dapat diubah langsung dari halaman Desain &amp; Preview.</span></div><button class="btn" id="resetDesign"><i class="fa-solid fa-rotate-left"></i> Reset Desain</button></div>
       <div class="designGrid">
-        <div class="designField"><label>Kartu per Lembar A4</label><select id="designCapacity" class="select"><option value="4">4 kartu / A4 (2 × 2)</option><option value="6">6 kartu / A4 (2 × 3)</option><option value="8">8 kartu / A4 (2 × 4)</option><option value="10">10 kartu / A4 (2 × 5)</option><option value="12">12 kartu / A4 (3 × 4)</option></select><small>Semakin banyak kartu, ukuran kartu semakin kecil.</small></div>
+        <div class="designField"><label>Ukuran Kertas</label><select id="paperSize" class="select">
+<option value="A4">A4 — 210 × 297 mm</option>
+<option value="F4">F4 / Folio — 215 × 330 mm</option>
+<option value="LETTER">Letter — 216 × 279 mm</option>
+<option value="LEGAL">Legal — 216 × 356 mm</option>
+<option value="A3">A3 — 297 × 420 mm</option>
+<option value="A5">A5 — 148 × 210 mm</option>
+<option value="CUSTOM">Custom</option>
+</select><small>Pilih A4, F4/Folio, Letter, Legal, A3, A5, atau ukuran sendiri.</small></div>
+<div class="designField"><label>Orientasi</label><select id="paperOrientation" class="select"><option value="portrait">Portrait / Tegak</option><option value="landscape">Landscape / Mendatar</option></select><small>Ukuran tabel dan kartu otomatis mengikuti orientasi.</small></div>
+<div class="designField" id="customPaperBox" style="display:none"><label>Ukuran Custom (mm)</label><div class="customPaperInputs"><input id="customPaperW" class="input" type="number" min="50" max="1000" step="1" placeholder="Lebar"><span>×</span><input id="customPaperH" class="input" type="number" min="50" max="1000" step="1" placeholder="Tinggi"></div><small>Contoh: 215 × 330 mm untuk ukuran khusus.</small></div>
+<div class="designField"><label>Kartu per Lembar</label><select id="designCapacity" class="select"><option value="1">1 kartu</option><option value="2">2 kartu</option><option value="4">4 kartu</option><option value="6">6 kartu</option><option value="8">8 kartu</option><option value="10">10 kartu</option><option value="12">12 kartu</option></select><small>Jumlah kartu menyesuaikan ukuran kertas yang dipilih.</small></div>
         <div class="designField"><label>Foto pada Kartu</label><select id="photoSize" class="select"><option value="none">Tanpa foto</option><option value="small">Foto kecil (otomatis)</option><option value="medium">Foto kecil + (otomatis)</option></select><small>Upload/tempel foto apa saja. Aplikasi otomatis menyesuaikan ke bingkai kecil.</small></div>
         <div class="designField"><label>Gaya Bingkai / Garis Potong</label><select id="borderStyle" class="select"><option value="thin">Garis Tipis</option><option value="medium">Garis Sedang</option><option value="thick">Garis Tebal</option><option value="double" selected>Garis Ganda (Double)</option><option value="dashed">Garis Putus-putus</option></select><small>Garis kartu sekaligus menjadi panduan pemotongan.</small></div>
         <div class="designField"><label>Jarak Antar Kartu</label><select id="cardGap" class="select"><option value="0" selected>0 mm — Rapat</option><option value="0.5">0,5 mm</option><option value="1">1 mm</option><option value="2">2 mm</option></select><small>0 mm direkomendasikan untuk hemat kertas dan mudah dipotong.</small></div>
         <div class="designField"><label>Ukuran Font Jadwal</label><div class="rangeRow"><input id="scheduleFontSize" type="range" min="8" max="16" step="1" value="11"><span class="rangeValue" id="scheduleFontValue">11 px</span></div><small>Geser ukuran huruf. Jika lebih dari 8 mapel, tabel otomatis dibagi 2 kolom agar tetap terbaca dan tidak tumpang tindih.</small></div>
       </div>
     </div>
-    <div class="paperLegend"><span><i class="fa-solid fa-border-all"></i> Garis kartu = panduan potong</span><span><i class="fa-solid fa-ruler-combined"></i> Ukuran mengikuti A4</span><span id="designSummary">8 kartu • Double • Tanpa foto</span></div>
+    <div class="paperLegend"><span><i class="fa-solid fa-file-lines"></i> Kertas: pilih A4/F4/Letter/Legal/A3/A5/Custom</span><span><i class="fa-solid fa-border-all"></i> Garis kartu = panduan potong</span><span><i class="fa-solid fa-ruler-combined"></i> Ukuran mengikuti kertas</span><span id="designSummary">8 kartu • Double • Tanpa foto</span></div>
     <div id="paperzone" class="paperzone"><div id="paper"></div><div id="schedulePaper" class="schedulepaper" style="display:none"></div></div>
   </div>
 </section>
@@ -324,7 +342,7 @@
 "use strict";
 var LOGO="https://res.cloudinary.com/bwmgqxug/image/upload/v1789022731/logo95_-_Copy.png";
 var app={
-  user:null, auth:{username:"",password:""}, logo:LOGO, cardType:"meja", sigMode:"draw", signature:"", design:{capacity:8,photoSize:"none",borderStyle:"double",cardGap:0,scheduleFontSize:11},
+  user:null, auth:{username:"",password:""}, logo:LOGO, cardType:"meja", sigMode:"draw", signature:"", design:{capacity:8,photoSize:"none",borderStyle:"double",cardGap:0,scheduleFontSize:11,paperSize:"A4",paperOrientation:"portrait",customPaperW:210,customPaperH:297},
   students:[
     {no_peserta:"26-03-06-0001",nama_lengkap:"AHMAD RIZKY PRATAMA",jk:"Laki-laki",kelas:"XII TKJ 1",ruang:"Ruang 01",ttl:"Bojonegoro, 12 Mei 2007",foto_url:""},
     {no_peserta:"26-03-06-0002",nama_lengkap:"SITI NURHALIZA",jk:"Perempuan",kelas:"XII TKJ 1",ruang:"Ruang 01",ttl:"Bojonegoro, 20 Agustus 2007",foto_url:""}
@@ -375,9 +393,31 @@ function scheduleDateLabel(v){
   var mons=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
   return days[d.getDay()]+", "+String(d.getDate()).padStart(2,"0")+" "+mons[d.getMonth()].slice(0,3)+" "+d.getFullYear();
 }
+function getPaperSize(){
+  var d=app.design||{},key=d.paperSize||"A4";
+  var sizes={A4:[210,297],F4:[215,330],LETTER:[216,279],LEGAL:[216,356],A3:[297,420],A5:[148,210]};
+  var s=sizes[key]||[Number(d.customPaperW)||210,Number(d.customPaperH)||297];
+  var w=Number(s[0])||210,h=Number(s[1])||297;
+  if(d.paperOrientation==="landscape"){var t=w;w=h;h=t}
+  return {w:w,h:h,key:key,orientation:d.paperOrientation||"portrait"};
+}
+function gridForCapacity(n){
+  n=Number(n)||1;
+  if(n<=1)return {cols:1,rows:1};
+  if(n===2)return {cols:1,rows:2};
+  if(n===4)return {cols:2,rows:2};
+  if(n===6)return {cols:2,rows:3};
+  if(n===8)return {cols:2,rows:4};
+  if(n===10)return {cols:2,rows:5};
+  return {cols:3,rows:Math.ceil(n/3)};
+}
 function scheduleCardDimensions(n){
-  var cols=n===12?3:2, rows=n===1?1:(n===2?2:(n===4?2:(n===6?3:(n===10?5:4)))),gap=Number(app.design.cardGap)||0;
-  return {w:(210-6-gap*(cols-1))/cols,h:(297-6-gap*(rows-1))/rows};
+  var p=getPaperSize(),g=gridForCapacity(n),gap=Number(app.design.cardGap)||0;
+  return {w:(p.w-6-gap*(g.cols-1))/g.cols,h:(p.h-6-gap*(g.rows-1))/g.rows};
+}
+function paperStyle(n){
+  var p=getPaperSize(),g=gridForCapacity(n),gap=Number(app.design.cardGap)||0;
+  return 'width:'+p.w.toFixed(2)+'mm;height:'+p.h.toFixed(2)+'mm;min-height:'+p.h.toFixed(2)+'mm;grid-template-columns:repeat('+g.cols+',minmax(0,1fr));grid-template-rows:repeat('+g.rows+',minmax(0,1fr));gap:'+gap+'mm;';
 }
 function normClass(v){return String(v||"").trim().toLowerCase().replace(/\s+/g," ")}
 function scheduleForStudent(student){
@@ -418,7 +458,7 @@ function buildSchedulePage(chunk,n){
     cards+=scheduleCardHtml(scheduleForStudent(student),n,student);
   });
   var gap=Number(app.design.cardGap)||0;
-  return '<div class="schedule-preview-sheet paper layout-'+n+'" style="gap:'+gap+'mm">'+cards+'</div>';
+  return '<div class="schedule-preview-sheet paper layout-'+n+'" style="'+paperStyle(n)+'">'+cards+'</div>';
 }
 function buildSchedulePages(){
   var rows=app.schedule.filter(function(x){return x.subject||x.date||x.time}),n=+app.design.capacity||8;
@@ -442,14 +482,35 @@ function buildScheduleA4(){
 }
 function borderCss(){var m={thin:"1px solid #6f819c",medium:"1.5px solid #4e6380",thick:"2px solid #263d5e",double:"3px double #263d5e",dashed:"1px dashed #5f7899"};return m[app.design.borderStyle]||m.double}
 function photoClass(){return app.design.photoSize==="none"?" noPhoto":""}
-function syncDesignControls(){var d=app.design||{};if(d.photoSize==="2x3"||d.photoSize==="3x4"||d.photoSize==="4x6")d.photoSize="small";if(el("designCapacity"))el("designCapacity").value=String(d.capacity||8);if(el("photoSize"))el("photoSize").value=d.photoSize||"none";if(el("borderStyle"))el("borderStyle").value=d.borderStyle||"double";if(el("cardGap"))el("cardGap").value=String(d.cardGap==null?0:d.cardGap);if(el("scheduleFontSize")){el("scheduleFontSize").value=String(d.scheduleFontSize||11);el("scheduleFontValue").textContent=String(d.scheduleFontSize||11)+" px"}updateDesignSummary()}
-function updateDesignSummary(){if(!el("designSummary"))return;var names={thin:"Tipis",medium:"Sedang",thick:"Tebal",double:"Double",dashed:"Putus-putus"};var photos={none:"Tanpa foto",small:"Foto kecil",medium:"Foto kecil +","2x3":"Foto kecil","3x4":"Foto kecil","4x6":"Foto kecil"};el("designSummary").textContent=(app.design.capacity||8)+" kartu • "+(names[app.design.borderStyle]||"Double")+" • "+(photos[app.design.photoSize]||"Tanpa foto")+" • Jarak "+(app.design.cardGap||0)+" mm"}
+function syncDesignControls(){
+  var d=app.design||{};
+  if(d.photoSize==="2x3"||d.photoSize==="3x4"||d.photoSize==="4x6")d.photoSize="small";
+  if(el("designCapacity"))el("designCapacity").value=String(d.capacity||8);
+  if(el("photoSize"))el("photoSize").value=d.photoSize||"none";
+  if(el("borderStyle"))el("borderStyle").value=d.borderStyle||"double";
+  if(el("cardGap"))el("cardGap").value=String(d.cardGap==null?0:d.cardGap);
+  if(el("scheduleFontSize")){el("scheduleFontSize").value=String(d.scheduleFontSize||11);el("scheduleFontValue").textContent=String(d.scheduleFontSize||11)+" px"}
+  if(el("paperSize"))el("paperSize").value=d.paperSize||"A4";
+  if(el("paperOrientation"))el("paperOrientation").value=d.paperOrientation||"portrait";
+  if(el("customPaperW"))el("customPaperW").value=d.customPaperW||210;
+  if(el("customPaperH"))el("customPaperH").value=d.customPaperH||297;
+  if(el("customPaperBox"))el("customPaperBox").style.display=(d.paperSize==="CUSTOM")?"block":"none";
+  updateDesignSummary();
+  applyPrintPaper();
+}
+function updateDesignSummary(){
+  if(!el("designSummary"))return;
+  var names={thin:"Tipis",medium:"Sedang",thick:"Tebal",double:"Double",dashed:"Putus-putus"};
+  var photos={none:"Tanpa foto",small:"Foto kecil",medium:"Foto kecil +","2x3":"Foto kecil","3x4":"Foto kecil","4x6":"Foto kecil"};
+  var p=getPaperSize();
+  el("designSummary").textContent=(app.design.capacity||8)+" kartu • "+p.key+" "+(p.orientation==="landscape"?"Landscape":"Portrait")+" • "+p.w+"×"+p.h+" mm • "+(names[app.design.borderStyle]||"Double")+" • "+(photos[app.design.photoSize]||"Tanpa foto");
+}
 function renderCards(){
   var c=cfg(),n=+app.design.capacity||8,students=app.students,paper=el("paper"),html="",cardLogo=app.logo||LOGO,usePhoto=app.design.photoSize!=="none";
-  if([4,6,8,10,12].indexOf(n)<0)n=8; app.design.capacity=n;
+  if([1,2,4,6,8,10,12].indexOf(n)<0)n=8; app.design.capacity=n;
   if(["none","small","medium"].indexOf(app.design.photoSize)<0)app.design.photoSize="none";
   var gap=Number(app.design.cardGap)||0, bcss=borderCss();
-  if(el("layoutInfo"))el("layoutInfo").textContent=n+" kartu / A4";
+  if(el("layoutInfo")){var pp=getPaperSize();el("layoutInfo").textContent=n+" kartu / "+pp.key+" "+(pp.orientation==="landscape"?"Landscape":"Portrait")+" ("+pp.w+"×"+pp.h+" mm)";}
   updateDesignSummary();
   if(!students.length){paper.innerHTML='<div class="paper layout-'+n+'"><div class="empty">Belum ada peserta.</div></div>';return}
   for(var p=0;p<students.length;p+=n){
@@ -461,9 +522,20 @@ function renderCards(){
       var sig=app.signature&&app.sigMode!=="none"?'<img src="'+app.signature+'">':"",title=app.cardType==="meja"?"KARTU MEJA PESERTA":"KARTU PESERTA UJIAN";
       cards+='<div class="ecard" style="border:'+bcss+'"><div class="ehead"><img class="schoollogo" src="'+esc(cardLogo)+'"><div class="ct"><div class="big">'+title+'</div><div>'+esc(c.judul_ujian)+'</div><div>'+esc(c.nama_sekolah)+'</div><div>Tahun Ajaran: '+esc(c.tahun_ajaran)+'</div></div><img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&amp;data='+encodeURIComponent(s.no_peserta||"")+'"></div><div class="info"><div class="ir"><span>Nomor Peserta</span><b>: '+esc(s.no_peserta)+'</b></div><div class="ir"><span>Nama Lengkap</span><b>: '+esc(s.nama_lengkap)+'</b></div><div class="ir"><span>Kelas</span><b>: '+esc(s.kelas)+'</b></div><div class="ir"><span>Ruang</span><b>: '+esc(s.ruang)+'</b></div><div class="ir"><span>Tempat, Tgl Lahir</span><b>: '+esc(s.ttl)+'</b></div><div class="ir"><span>Jenis Kelamin</span><b>: '+esc(s.jk)+'</b></div></div><div class="foot">'+photo+'<div class="sign">'+esc(c.kota)+', '+esc(c.tgl_ttd)+'<br><b>Kepala Sekolah</b><div class="sigspace">'+sig+'</div><span class="signName"><u>'+esc(c.nama_kepsek||"________________")+'</u></span><span class="signNip">NIP. '+esc(c.nip_kepsek||"________________")+'</span></div></div></div>';
     });
-    html+='<div class="paper layout-'+n+(usePhoto?' '+(app.design.photoSize==='medium'?'mediumPhoto':'smallPhoto'):' noPhoto')+'" style="gap:'+gap+'mm">'+cards+'</div>';
+    html+='<div class="paper layout-'+n+(usePhoto?' '+(app.design.photoSize==='medium'?'mediumPhoto':'smallPhoto'):' noPhoto')+'" style="'+paperStyle(n)+'">'+cards+'</div>';
   }
   paper.innerHTML=html;
+}
+function applyPrintPaper(){
+  var p=getPaperSize(),st=el("dynamicPrintStyle");
+  if(!st){st=document.createElement("style");st.id="dynamicPrintStyle";document.head.appendChild(st)}
+  st.textContent="@page{size:"+p.w+"mm "+p.h+"mm;margin:0}@media print{html,body{width:"+p.w+"mm!important} .paper{width:"+p.w+"mm!important;height:"+p.h+"mm!important;min-height:"+p.h+"mm!important}.schedule-preview-sheet{width:"+p.w+"mm!important;height:"+p.h+"mm!important;min-height:"+p.h+"mm!important}.schedulepaper{width:"+p.w+"mm!important}.schedulepaper .schedule-preview-sheet{width:"+p.w+"mm!important;height:"+p.h+"mm!important;min-height:"+p.h+"mm!important}}";
+}
+function setupPaperControls(){
+  if(el("paperSize"))el("paperSize").onchange=function(){app.design.paperSize=this.value;if(this.value!=="CUSTOM"){var p=getPaperSize();app.design.customPaperW=p.w;app.design.customPaperH=p.h}else{app.design.customPaperW=Number(el("customPaperW").value)||210;app.design.customPaperH=Number(el("customPaperH").value)||297}syncDesignControls();renderCards();renderSchedulePreview();saveLocal()};
+  if(el("paperOrientation"))el("paperOrientation").onchange=function(){app.design.paperOrientation=this.value;syncDesignControls();renderCards();renderSchedulePreview();saveLocal()};
+  ["customPaperW","customPaperH"].forEach(function(id){if(el(id))el(id).oninput=function(){app.design.paperSize="CUSTOM";app.design[id==="customPaperW"?"customPaperW":"customPaperH"]=Number(this.value)||50;syncDesignControls();renderCards();renderSchedulePreview();saveLocal()}});
+  applyPrintPaper();
 }
 function renderAll(){renderStudents();renderPhotoManager();renderCards();renderSchedulePreview();updateManageStats();el("dataStatus").textContent=apiReady()?"Terhubung ke Apps Script":"Mode lokal"}
 function saveLocal(){localStorage.setItem("ekartu_rebuild_cfg",JSON.stringify(cfg()));localStorage.setItem("ekartu_rebuild_students",JSON.stringify(app.students));localStorage.setItem("ekartu_rebuild_logo",app.logo);localStorage.setItem("ekartu_design",JSON.stringify(app.design))}
@@ -595,8 +667,8 @@ function login(){var u=el("loginUser").value.trim(),p=el("loginPass").value;if(!
 function loadHistory(){if(!apiReady()){el("historyRows").innerHTML='<tr><td colspan="4" class="empty">Mode lokal. Belum ada riwayat dari Spreadsheet.</td></tr>';return}jsonp("getPrintHistory",{limit:100},function(rows){el("historyRows").innerHTML=(rows||[]).map(function(x){return"<tr><td>"+esc(x.tgl)+"</td><td>"+esc(x.operator)+"</td><td>"+x.jumlah+"</td><td>"+esc(x.ruang)+"</td></tr>"}).join("")||'<tr><td colspan="4" class="empty">Belum ada riwayat.</td></tr>'},function(e){toast(e.message,true)})}
 function loadUsers(){if(!apiReady())return;jsonp("getUsers",{},function(rows){el("users").innerHTML=(rows||[]).map(function(u){return"<tr><td>"+esc(u.username)+"</td><td>"+esc(u.nama)+"</td><td>"+esc(u.role)+"</td><td><div class='user-actions'><button class='btn blue' data-edit='"+esc(u.username)+"'>Edit</button><button class='btn red' data-del='"+esc(u.username)+"'>Hapus</button></div></td></tr>"}).join("")||'<tr><td colspan="4" class="empty">Belum ada pengguna.</td></tr>';el("users").querySelectorAll("[data-edit]").forEach(function(b){b.onclick=function(){var u=(rows||[]).find(function(x){return x.username===b.dataset.edit})||{};el("editOldUser").value=b.dataset.edit;el("editUser").value=b.dataset.edit;el("editName").value=u.nama||"";el("editPass").value="";el("editRole").value=isAdminRole(u.role)?"Admin":(u.role||"Peserta");el("userEditModal").classList.add("show")}});el("users").querySelectorAll("[data-del]").forEach(function(b){b.onclick=function(){if(b.dataset.del===app.user.username){toast("Akun aktif tidak dapat dihapus.",true);return}if(!confirm("Hapus "+b.dataset.del+"?"))return;postApi("deleteUser",{username:b.dataset.del},function(r){if(r&&r.success){loadUsers();toast("Pengguna dihapus")}else toast((r&&r.message)||"Gagal menghapus pengguna",true)},function(e){toast(e.message,true)})}})},function(e){toast(e.message,true)})}
 function logPrint(kind){if(!apiReady()||!app.user)return;postApi("savePrintHistory",{operator:app.user.username,jumlahKartu:app.students.length,kelasRuang:kind},function(){},function(){})}
-function printCards(){if(!app.user){toast("Login terlebih dahulu untuk mencetak",true);el("loginModal").classList.add("show");return}if(app.user.role==="Peserta"){toast("Role Peserta tidak memiliki akses cetak",true);return}renderCards();renderSchedulePreview();var old=el("schedulePaper").innerHTML,shown=el("schedulePaper").style.display;if(el("includeSchedule").checked&&app.schedule.some(function(x){return x.subject||x.date||x.time})){el("schedulePaper").innerHTML=buildScheduleA4();el("schedulePaper").style.display="flex"}logPrint("Cetak");window.print();setTimeout(function(){el("schedulePaper").innerHTML=old;el("schedulePaper").style.display=shown},800)}
-async function pdf(){if(!app.user){toast("Login terlebih dahulu untuk PDF",true);el("loginModal").classList.add("show");return}if(app.user.role==="Peserta"){toast("Role Peserta tidak memiliki akses PDF",true);return}if(!window.html2canvas||!window.jspdf){toast("Library PDF belum siap",true);return}renderCards();renderSchedulePreview();loading(true,"Membuat PDF...");try{var PDF=window.jspdf.jsPDF,pdf=new PDF({orientation:"portrait",unit:"mm",format:"a4"}),pages=el("paper").querySelectorAll(".paper");for(var pi=0;pi<pages.length;pi++){if(pi>0)pdf.addPage();var front=await html2canvas(pages[pi],{scale:2,useCORS:true,backgroundColor:"#fff"});pdf.addImage(front.toDataURL("image/jpeg",.94),"JPEG",0,0,210,297)}if(el("includeSchedule").checked&&app.schedule.some(function(x){return x.subject||x.date||x.time})&&app.students.length){var temp=document.createElement("div");temp.style.cssText="position:fixed;left:-10000px;top:0;width:210mm;background:#fff;";temp.innerHTML=buildScheduleA4();document.body.appendChild(temp);var backs=temp.querySelectorAll(".schedule-preview-sheet");for(var bi=0;bi<backs.length;bi++){pdf.addPage();var back=await html2canvas(backs[bi],{scale:2,useCORS:true,backgroundColor:"#fff"});pdf.addImage(back.toDataURL("image/jpeg",.94),"JPEG",0,0,210,297)}temp.remove()}pdf.save("E-Kartu-Ujian-SMK-Budi-Mulya-"+el("tahun").value+".pdf");logPrint("Unduh PDF");toast("PDF berhasil diunduh")}catch(e){toast("PDF gagal: "+e.message,true)}finally{loading(false)}}
+function printCards(){applyPrintPaper();if(!app.user){toast("Login terlebih dahulu untuk mencetak",true);el("loginModal").classList.add("show");return}if(app.user.role==="Peserta"){toast("Role Peserta tidak memiliki akses cetak",true);return}renderCards();renderSchedulePreview();var old=el("schedulePaper").innerHTML,shown=el("schedulePaper").style.display;if(el("includeSchedule").checked&&app.schedule.some(function(x){return x.subject||x.date||x.time})){el("schedulePaper").innerHTML=buildScheduleA4();el("schedulePaper").style.display="flex"}logPrint("Cetak");window.print();setTimeout(function(){el("schedulePaper").innerHTML=old;el("schedulePaper").style.display=shown},800)}
+async function pdf(){if(!app.user){toast("Login terlebih dahulu untuk PDF",true);el("loginModal").classList.add("show");return}if(app.user.role==="Peserta"){toast("Role Peserta tidak memiliki akses PDF",true);return}if(!window.html2canvas||!window.jspdf){toast("Library PDF belum siap",true);return}renderCards();renderSchedulePreview();loading(true,"Membuat PDF...");try{var pp=getPaperSize(),PDF=window.jspdf.jsPDF,pdf=new PDF({orientation:"portrait",unit:"mm",format:[pp.w,pp.h]}),pages=el("paper").querySelectorAll(".paper");for(var pi=0;pi<pages.length;pi++){if(pi>0)pdf.addPage();var front=await html2canvas(pages[pi],{scale:2,useCORS:true,backgroundColor:"#fff"});pdf.addImage(front.toDataURL("image/jpeg",.94),"JPEG",0,0,pp.w,pp.h)}if(el("includeSchedule").checked&&app.schedule.some(function(x){return x.subject||x.date||x.time})&&app.students.length){var temp=document.createElement("div");temp.style.cssText="position:fixed;left:-10000px;top:0;width:"+pp.w+"mm;background:#fff;";temp.innerHTML=buildScheduleA4();document.body.appendChild(temp);var backs=temp.querySelectorAll(".schedule-preview-sheet");for(var bi=0;bi<backs.length;bi++){pdf.addPage();var back=await html2canvas(backs[bi],{scale:2,useCORS:true,backgroundColor:"#fff"});pdf.addImage(back.toDataURL("image/jpeg",.94),"JPEG",0,0,pp.w,pp.h)}temp.remove()}pdf.save("E-Kartu-Ujian-SMK-Budi-Mulya-"+el("tahun").value+".pdf");logPrint("Unduh PDF");toast("PDF berhasil diunduh")}catch(e){toast("PDF gagal: "+e.message,true)}finally{loading(false)}}
 
 function init(){
 var savedApi=localStorage.getItem("ekartu_api_url")||window.EKARTU_API_URL||"";
@@ -612,7 +684,7 @@ el("helpBtn").onclick=function(){el("welcomeModal").classList.add("show")};
  el("pdfBtn").onclick=pdf;el("printBtn").onclick=printCards;el("refreshHistory").onclick=loadHistory;syncDesignControls();["designCapacity","photoSize","borderStyle","cardGap"].forEach(function(id){if(el(id))el(id).onchange=function(){app.design.capacity=+el("designCapacity").value||8;app.design.photoSize=el("photoSize").value;app.design.borderStyle=el("borderStyle").value;app.design.cardGap=Number(el("cardGap").value)||0;localStorage.setItem("ekartu_design",JSON.stringify(app.design));renderCards();renderSchedulePreview()}});if(el("scheduleFontSize"))el("scheduleFontSize").oninput=function(){app.design.scheduleFontSize=Number(this.value)||11;el("scheduleFontValue").textContent=app.design.scheduleFontSize+" px";localStorage.setItem("ekartu_design",JSON.stringify(app.design));renderSchedulePreview()};el("resetDesign").onclick=function(){app.design={capacity:8,photoSize:"none",borderStyle:"double",cardGap:0,scheduleFontSize:11};localStorage.setItem("ekartu_design",JSON.stringify(app.design));syncDesignControls();renderCards();renderSchedulePreview();toast("Desain dikembalikan ke pengaturan awal")};
  el("drop").onclick=function(){el("excelFile").click()};el("excelFile").onchange=function(){readExcel(this.files[0]);this.value=""};el("drop").ondragover=function(e){e.preventDefault()};el("drop").ondrop=function(e){e.preventDefault();readExcel(e.dataTransfer.files[0])};
  el("demoBtn").onclick=function(){app.students=[{no_peserta:"26-03-06-0001",nama_lengkap:"AHMAD RIZKY PRATAMA",jk:"Laki-laki",kelas:"XII TKJ 1",ruang:"Ruang 01",ttl:"Bojonegoro, 12 Mei 2007",foto_url:""},{no_peserta:"26-03-06-0002",nama_lengkap:"SITI NURHALIZA",jk:"Perempuan",kelas:"XII TKJ 1",ruang:"Ruang 01",ttl:"Bojonegoro, 20 Agustus 2007",foto_url:""}];renderAll();saveLocal()};
- el("replaceBtn").onclick=replaceStudents;el("studentTemplateBtn").onclick=downloadStudentTemplate;el("scheduleTemplateBtnTop").onclick=downloadScheduleTemplate;el("scheduleTemplateBtn").onclick=downloadScheduleTemplate;el("scheduleImportBtn").onclick=function(){el("scheduleExcelFile").click()};el("scheduleExcelFile").onchange=function(){readScheduleExcel(this.files[0]);this.value=""};setupPhotoManager();el("bulkPhotoBtn").onclick=uploadBulkPhotos;el("logoBtn").onclick=function(){el("logoFile").click()};el("logoFile").onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){app.logo=e.target.result;renderCards()};r.readAsDataURL(f)};el("logoReset").onclick=function(){app.logo=LOGO;renderCards()};
+ el("replaceBtn").onclick=replaceStudents;el("studentTemplateBtn").onclick=downloadStudentTemplate;el("scheduleTemplateBtnTop").onclick=downloadScheduleTemplate;el("scheduleTemplateBtn").onclick=downloadScheduleTemplate;el("scheduleImportBtn").onclick=function(){el("scheduleExcelFile").click()};el("scheduleExcelFile").onchange=function(){readScheduleExcel(this.files[0]);this.value=""};setupPhotoManager();setupPaperControls();el("bulkPhotoBtn").onclick=uploadBulkPhotos;el("logoBtn").onclick=function(){el("logoFile").click()};el("logoFile").onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){app.logo=e.target.result;renderCards()};r.readAsDataURL(f)};el("logoReset").onclick=function(){app.logo=LOGO;renderCards()};
  el("sigClear").onclick=function(){app.signature="";el("sigCanvas").getContext("2d").clearRect(0,0,900,260);renderCards()};document.querySelectorAll("[data-sig]").forEach(function(b){b.onclick=function(){setSig(b.dataset.sig)}});
  el("sigFile").onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){app.signature=e.target.result;el("sigPreview").src=app.signature;el("sigPreview").style.display="block";renderCards()};r.readAsDataURL(f)};
  el("addSchedule").onclick=function(){app.schedule.push({subject:"",date:"",time:""});renderSchedule();renderSchedulePreview()};el("includeSchedule").onchange=renderSchedulePreview;
